@@ -158,7 +158,7 @@ sequential repetitions of the protocol. More explicitly, if we repeat the protoc
 
 As hinted in the last section, there is an interactive protocol for GNI under this definition:
 
-\begin{theorem}[Goldreich-Micali-Widgerson '85] \label{thm:gni_protocol}
+\begin{theorem} \textnormal{\cite{gmw91}} \label{thm:gni_protocol}
     $\textnormal{\textsf{GNI}} \in \IP$.
 \end{theorem}
 \begin{proof} Consider the following protocol:
@@ -238,7 +238,7 @@ Because we now involve round complexity explicitly in the definitions, it matter
 
 The following theorem, which we will cover in later weeks, shows us that it wasn't the private randomness that gave $\IP$ the power to prove $\textsf{GNI}$:
 
-\begin{theorem}[Goldwasser-Sipser '87]
+\begin{theorem} \textnormal{\cite{gs86}}
     For all poly-time computable $k$,
     $\IP[k] \subseteq \AM[k + 2]$.
 \end{theorem}
@@ -246,5 +246,7 @@ The following theorem, which we will cover in later weeks, shows us that it wasn
 In other words, by adding only two rounds we can turn any private-coin protocol into a public-coin one!
 This simple fact turns out to have major implications in both cryptography and complexity. 
 
+\bibliographystyle{alpha}
+\bibliography{pcpip}
 
 \end{document}
