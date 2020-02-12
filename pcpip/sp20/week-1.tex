@@ -18,15 +18,9 @@ Confusion is a normal and expected part of the process.
 Complexity theory as we know it from CS 170 is about measuring the difficulty of problems by
 the efficiency of the algorithms that solve them.
 As a shorthand, we say efficient algorithms are exactly those that are 
-polynomial-time (ignoring details such as leading constants or powers).
-Why this `extended Church-Turing thesis' holds is a story for another time,
-but the class of problems that have poly-time algorithms are called $\Pclass$:
-
-\begin{definition}
-    Let $L \subseteq \{0, 1\}^*$. This language $L \in \Pclass$ if there exists a
-    polynomial $p\colon \N \to \N$ and Turing machine $M$ such that $M(x)$ runs in time $p(|x|)$, and 
-    $$ x \in L \iff M(x) = 1$$
-\end{definition}
+polynomial-time (ignoring details such as leading constants or polynomial degree).
+Why this `extended Church-Turing thesis' seems to hold is a story for another time,
+but the class of problems that have poly-time algorithms are called $\Pclass$.
 
 Languages that are in $\Pclass$ are not very problematic.
 From both a complexity and cryptography perspective, you could say the information in
@@ -63,7 +57,7 @@ What happens if we have a conversation, instead?
 
 \section{Deterministic Interactive Proofs}
 
-Imagine connecting two Turing machines such that they share a tape, and can talk to each other.
+Imagine connecting two parties such that they share a tape, and can talk to each other.
 One will be the prover $P$, and the other will be the verifier $V$.
 
 \begin{definition}
@@ -81,9 +75,11 @@ The variable $\langle P, V \rangle(x)$ respresents the following interaction (wh
 \end{quote}
 \end{definition}
 
+Usually $V$ is a poly-time turing machine. $P$ can be a bounded prover, or an arbitrary function that can even evaluate things that are uncomputable.
+
 Lets define a class $\dIP$, which is exactly $\NP$ extended to allow interaction.
 We restrict the verifier to be poly-time just like in the definition of $\NP$.
-However, just as there's a `magic' proof string $\pi$, we allow the prover $P$ unlimited computational power.
+However, just as there's a `magic' proof string $\pi$, we allow the prover $P$ unlimited power.
 
 \begin{definition}
     $L \in \dIP$ if there exists a Turing machine $V(x)$ (for verifier) such that
@@ -98,7 +94,7 @@ However, just as there's a `magic' proof string $\pi$, we allow the prover $P$ u
 How is $\dIP$ related to $\NP$? Well, $\NP \subseteq \dIP$, as that is exactly a 1-round interaction from the prover to the verifier.
 However, it turns out that allowing interaction has not given us anything more!
 
-\begin{claim} $\dIP = \NP$\end{claim}
+\begin{claim} $\dIP = \NP$\end{claim}.
 \begin{proof}
     $\NP \subseteq \dIP$ as remarked above.
 
@@ -107,7 +103,7 @@ However, it turns out that allowing interaction has not given us anything more!
     $a_1 = V(x)$, $a_3 = V(x, a_1, a_2)$, and so on, until finally it checks that $V(x, a_1, \ldots, a_k) = 1$. 
     We will use this transcript as the $\NP$-certificate.
 
-    \textbf{Completness}: If $x \in L$, then there is some transcript $(a_1, \ldots, a_k)$ produced by $P$ that causes $V$ to accept.
+    \textbf{Completeness}: If $x \in L$, then there is some transcript $(a_1, \ldots, a_k)$ produced by $P$ that causes $V$ to accept.
     But then $V'$ accepts this transcript. \\
     \textbf{Soundness}: (we show the contrapositive) If there exists some transcript $(a_1, \ldots, a_k)$ that $V'$ accepts, then there is a prover $P$ that emits this transcript, so that $\langle P, V \rangle(x) = 1$. But then $x \in L$.
 \end{proof}
@@ -126,6 +122,21 @@ $\textsf{GNI}$ is the exactly the complement: the language consisting of all pai
 $\textsf{GNI}$ is in $\coNP$, but is not believed to be in $\NP$. 
 In fact, it's not immediately clear how one can give a short proof, or even an interaction as a witness to the fact that two particular graphs $G_1, G_2$ are \textit{not} isomorphic. 
 However, it turns out that if we allow the poly-time verifier to use random coin flips, there is an interactive protocol for $\textsf{GNI}$!
+
+Let us discuss one last thing about graph isomorphism, that we will use to construct the interactive protocol:
+
+\begin{claim}
+    Let $G_1 \cong G_2$. If $S_n$ is all permutations on $n$ vertices, then for all graphs $H$:
+    $$\Pr_{\pi \leftarrow S_n}[\sigma(G_1) = H] = \Pr_{\sigma \leftarrow S_n}[\sigma(G_2) = H]$$
+    In other words, $\sigma(G_1)$ and $\sigma(G_2)$ have exactly the same distribution.
+\end{claim}
+\begin{proof}
+    Let $\pi$ be the permutation such that $\pi(G_1) = G_2$.
+
+
+\end{proof}
+
+In other words, we've shown that a random permutation applied to $G_1$ has exactly the same distribution as one applied to $G_2$.
 
 \section{Interactive Proofs}
 
@@ -147,7 +158,7 @@ sequential repetitions of the protocol. More explicitly, if we repeat the protoc
 As hinted in the last section, there is an interactive protocol to show GNI under this definition:
 
 \begin{theorem}[GMW85]
-    $\textnormal{\textsf{GNI}} \in \IP$
+    $\textnormal{\textsf{GNI}} \in \IP$.
 \end{theorem}
 \begin{proof}
 Consider the following protocol:
