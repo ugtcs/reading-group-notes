@@ -1,4 +1,5 @@
-# Spring 2020 PCPIP
+# UGTCS Reading Groups
 
-These are Scribe Notes for UGTCS' spring 2020 PCPIP reading group.
-See the [website](https://ugtcs.berkeley.edu/reading-groups/sp20/pcpip/) for the reading group.
+These are Scribe Note sources for UGTCS's reading groups!
+See the [website](https://ugtcs.berkeley.edu/reading-groups) for the list of all reading groups.
+
