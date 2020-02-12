@@ -24,10 +24,12 @@
 \usepackage{multicol}
 \usepackage{fancyhdr}
 \usepackage{paralist}
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,arrows}
 
 \newcommand{\etal}{{\em et al.}\ }
 \newcommand{\assign}{\leftarrow}
-\newcommand{\eps}{\epsilon}
+\newcommand{\eps}{\varepsilon}
 \newcommand{\opt}{\textup{\textsc{opt}}}
 \newcommand{\alg}{\textup{\textsc{alg}}}
 \newcommand{\pr}{\textup{Pr}}
@@ -106,3 +108,11 @@
 	Figure \thelecnum.#1:~#3
 	\end{center}
 }
+
+\newcommand{\Pclass}{\mathsf{P}}
+\newcommand{\NP}{\mathsf{NP}}
+\newcommand{\coNP}{\mathsf{coNP}}
+\newcommand{\N}{\mathbb{N}}
+\DeclareMathOperator*{\poly}{\textup{poly}}
+\newcommand{\dIP}{\mathsf{dIP}}
+\newcommand{\IP}{\mathsf{IP}}
