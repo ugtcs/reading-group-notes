@@ -75,7 +75,7 @@ The variable $\langle P, V \rangle(x)$ respresents the following interaction (wh
 \end{quote}
 \end{definition}
 
-Usually $V$ is a poly-time turing machine. $P$ can be a bounded prover, or an arbitrary function that can even evaluate things that are uncomputable.
+Usually $V$ is a poly-time Turing machine. $P$ can be a bounded prover, or an arbitrary function that can even evaluate things that are uncomputable.
 
 Lets define a class $\dIP$, which is exactly $\NP$ extended to allow interaction.
 We restrict the verifier to be poly-time just like in the definition of $\NP$.
@@ -125,18 +125,19 @@ However, it turns out that if we allow the poly-time verifier to use random coin
 
 Let us discuss one last thing about graph isomorphism, that we will use to construct the interactive protocol:
 
-\begin{claim}
+\begin{claim} \label{claim:iso_dist}
     Let $G_1 \cong G_2$. If $S_n$ is all permutations on $n$ vertices, then for all graphs $H$:
     $$\Pr_{\pi \leftarrow S_n}[\sigma(G_1) = H] = \Pr_{\sigma \leftarrow S_n}[\sigma(G_2) = H]$$
-    In other words, $\sigma(G_1)$ and $\sigma(G_2)$ have exactly the same distribution.
+    where $\sigma \leftarrow S_n$ means that $\sigma$ is chosen uniformly at random from the set $S_n$. In other words, $\sigma(G_1)$ and $\sigma(G_2)$ have exactly the same distribution.
 \end{claim}
 \begin{proof}
     Let $\pi$ be the permutation such that $\pi(G_1) = G_2$.
-
-
+    For each $H$ the set of permutations $\{ \sigma \colon \sigma(G_1) = H\}$ is in one-to-one correspondence with the set $\{ \sigma \colon \sigma(G_2) = H \}$ by the mapping $\sigma \mapsto \sigma \circ \pi$.
+    As the distribution of $\sigma$ is uniform over $S_n$, that means the probability of these events is the same.
 \end{proof}
 
 In other words, we've shown that a random permutation applied to $G_1$ has exactly the same distribution as one applied to $G_2$.
+The implication is that it is impossible for anyone, even a computationally unbounded prover, to distinguish between $\sigma(G_1)$ and $\sigma(G_2)$.
 
 \section{Interactive Proofs}
 
@@ -155,27 +156,95 @@ In this definition, both probabilities are now taken over the random coin flips 
 Note also that we can make soundness exponentially decay with
 sequential repetitions of the protocol. More explicitly, if we repeat the protocol $|x|^c$ times so that the soundness error now becomes negligible in $|x|$, that is still in $\IP$.
 
-As hinted in the last section, there is an interactive protocol to show GNI under this definition:
+As hinted in the last section, there is an interactive protocol for GNI under this definition:
 
-\begin{theorem}[GMW85]
+\begin{theorem}[Goldreich-Micali-Widgerson '85] \label{thm:gni_protocol}
     $\textnormal{\textsf{GNI}} \in \IP$.
 \end{theorem}
-\begin{proof}
-Consider the following protocol:
-    \begin{center}
-    \begin{tikzpicture}[auto,>=stealth']
+\begin{proof} Consider the following protocol:
+
+\framed{
+    \begin{enumerate}
+        \item[0.] $P$ and $V$ are both given access to $x = (G_0, G_1)$.
+        \item $V$ picks $b \leftarrow \{0, 1 \}$ and $\pi \leftarrow S_n$, and sends $H = \pi(G_b)$ to $P$
+        \item $P$ uses its unlimited resources to find the $b'$ such that $G_{b'} \cong H$ (for example, by trying all permutations of $G_0$ and $G_1$), and sends $b'$ to the verifier
+        \item $V$ accepts iff $b = b'$
+    \end{enumerate}
+}
+
+We can visualize the protocol with the following sequence diagram:
+
+\begin{center}
+    \begin{tikzpicture}[auto,>=latex]
         \node[] (verifier) {$V$};
         \node[left of= verifier, node distance=3cm] (prover) {$P$};
         \node[below of=verifier, node distance=5cm] (verifier_ground) {};
         \node[below of=prover, node distance=5cm] (prover_ground) {};
+        \node[] at ($(prover)!0.5!(verifier)$) (between_pv) {};
+        \node[above of=between_pv] (input) {$(G_0, G_1)$};
         %
-        \draw (prover) -> (prover_ground);
+        \draw (prover) -- (prover_ground);
         \draw (verifier) -- (verifier_ground);
-        \draw[<-] ($(prover)!0.35!(prover_ground)$) -- node[above,scale=1,midway]{Hey} ($(verifier)!0.35!(verifier_ground)$);
-        \draw[->] ($(prover)!0.25!(prover_ground)$) -- node[below,scale=1,midway]{Text} ($(verifier)!0.25!(verifier_ground)$);
+        \node[anchor=west] (step-1) at ($(verifier)!0.25!(verifier_ground)$) {
+            \shortstack{
+                $b \leftarrow \{0, 1\}$  \\
+                $\pi \leftarrow S_n$ \\ 
+                $H = \pi(G_b)$
+            }
+       };
+       \draw (input) -- (prover);
+       \draw (input) -- (verifier);
+        \draw[<-] ($(prover)!0.35!(prover_ground)$) -- node[midway]{$H$} ($(verifier)!0.35!(verifier_ground)$);
+        \node[anchor=east] (step-2) at ($(prover)!0.5!(prover_ground)$) {
+            Find $b'$ such that $G_{b'} \cong H$
+       };
+        \draw[->] ($(prover)!0.65!(prover_ground)$) -- node[midway]{$b'$} ($(verifier)!0.65!(verifier_ground)$);
+       \node[anchor=west] (step-3) at ($(verifier)!0.7!(verifier_ground)$) {
+           Accept iff $b = b'$
+       };
     \end{tikzpicture}
 \end{center}
+To show that $\textsf{GNI} \in \IP$, we need to establish complexity, completeness, and soundness.
+The verifier is clearly polynomial-time on each step.
+
+\textbf{Completeness}: Let $G_0 \not\cong G_1$.
+Then $P$ can, by emuerating all permutations of $G_0$ and $G_1$, discover which $H$ is isomorphic to. Then $\Pr[b = b'] = 1$, so $\Pr[\langle P, V \rangle(G_0, G_1) = 1] = 1$.
+
+\textbf{Soundness}: Let $G_0 \cong G_1$. 
+By \Cref{claim:iso_dist}, $H \mid b = 0$ has the same distribution as $H \mid b = 1$. Therefore, $b'$ must be independent of $b$ (regardless of what the prover does), so $\Pr[b = b'] = \frac12$.
 
 \end{proof}
+
+This is our first indication that $\IP$ brings some power just beyond regular proofs in the $\NP$ sense!
+
+\section{Round Complexity, AM/MA}
+
+We can consider number of rounds to be measure of the efficiency of a protocol, although $\IP$ does not allow us to differentiate this beyond some polynomial number of rounds. Let $k \colon \N \to \N$ count the round complexity as a function of input size. 
+Then we let $\IP[k]$ denote the class of languages $L$ that have interactive proofs with $k(|x|)$ rounds for any $x \in L$.
+
+An essential feature of \Cref{thm:gni_protocol} appeared to be that the verifier was able to give a `hidden' challenge to the prover, and the only way the prover could reliably complete this challenge was if $G_0 \neq\cong G_1$.
+What happens if we restrict the verifier from giving `hidden' challenges to the prover?
+
+\begin{definition}
+Let $k \colon \N \to \N$. Then we define:
+\begin{itemize}
+    \item $\AM[k]$ is the subset of $\IP[k]$ where the verifier must send all its random bits as messages, and all its messages can only be random bits. Like for $\IP[k]$, the verifier goes first.
+    \item $\MA[k]$ is exactly like $\AM[k]$, except the prover goes first.
+\end{itemize} 
+\end{definition}
+
+Some quick remarks on these definitions. AM and MA refer to \textit{Arthur-Merlin} and \textit{Merlin-Arthur}, where \textit{Arthur} is a probabilistic polynomial-time verifier, and \textit{Merlin} is the unbounded prover. 
+Because we now involve round complexity explicitly in the definitions, it matters more who goes first (as for some protocols who goes first could change how many rounds are needed). Proof systems of the form deliniated by AM/MA are called \textit{public-coin}, as all the randomness used by $V$ is known by the prover.
+
+The following theorem, which we will cover in later weeks, shows us that it wasn't the private randomness that gave $\IP$ the power to prove $\textsf{GNI}$:
+
+\begin{theorem}[Goldwasser-Sipser '87]
+    For all poly-time computable $k$,
+    $\IP[k] \subseteq \AM[k + 2]$.
+\end{theorem}
+
+In other words, by adding only two rounds we can turn any private-coin protocol into a public-coin one!
+This simple fact turns out to have major implications in both cryptography and complexity. 
+
 
 \end{document}

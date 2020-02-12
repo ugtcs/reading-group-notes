@@ -25,6 +25,7 @@
 \usepackage{fancyhdr}
 \usepackage{paralist}
 \usepackage{tikz}
+\usepackage{cleveref}
 \usetikzlibrary{calc,positioning,arrows}
 
 \newcommand{\etal}{{\em et al.}\ }
@@ -116,3 +117,13 @@
 \DeclareMathOperator*{\poly}{\textup{poly}}
 \newcommand{\dIP}{\mathsf{dIP}}
 \newcommand{\IP}{\mathsf{IP}}
+\newcommand{\AM}{\mathsf{AM}}
+\newcommand{\MA}{\mathsf{MA}}
+
+\newcommand{\framed}[1]{
+   \noindent\fbox{
+      \parbox{\textwidth}{
+         #1
+      }
+   }
+}
